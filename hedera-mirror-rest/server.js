@@ -36,6 +36,7 @@ const topicmessage = require('./topicmessage.js');
 const {handleError} = require('./middleware/httpErrorHandler');
 const {responseHandler} = require('./middleware/responseHandler');
 const {metricsHandler} = require('./middleware/metricsHandler');
+const {requestLogger} = require('./middleware/requestLogger');
 
 // Logger
 const logger = log4js.getLogger();
@@ -48,13 +49,13 @@ log4js.configure({
   categories: {
     default: {
       appenders: ['everything'],
-      level: config.api.log.level,
+      level: config.log.level,
     },
   },
 });
 global.logger = log4js.getLogger();
 
-let port = config.api.port;
+let port = config.port;
 if (process.env.NODE_ENV == 'test') {
   port = 3000; // Use a dummy port for jest unit tests
 }
@@ -73,10 +74,10 @@ if (process.env.NODE_ENV !== 'test') {
 }
 
 const pool = new Pool({
-  user: config.db.apiUsername,
+  user: config.db.username,
   host: config.db.host,
   database: config.db.name,
-  password: config.db.apiPassword,
+  password: config.db.password,
   port: config.db.port,
 });
 global.pool = pool;
@@ -94,27 +95,31 @@ app.use(bodyParser.json());
 app.use(compression());
 app.use(cors());
 
+// logging middleware
+app.use(requestLogger);
+
 // metrics middleware
-if (config.api.metrics.enabled) {
+if (config.metrics.enabled) {
   app.use(metricsHandler());
 }
 
 let apiPrefix = '/api/v1';
 
-// routes
-app.getAsync(apiPrefix + '/transactions', transactions.getTransactions);
-app.getAsync(apiPrefix + '/transactions/:id', transactions.getOneTransaction);
-app.getAsync(apiPrefix + '/balances', balances.getBalances);
+// accounts routes
 app.getAsync(apiPrefix + '/accounts', accounts.getAccounts);
 app.getAsync(apiPrefix + '/accounts/:id', accounts.getOneAccount);
-app.getAsync(apiPrefix + '/topic/message/:consensusTimestamp', topicmessage.getMessageByConsensusTimestamp);
 
-// support singular and plural resource naming for single topic message via id and sequence
-app.getAsync(apiPrefix + '/topic/:id/message/:sequencenumber', topicmessage.getMessageByTopicAndSequenceRequest);
-app.getAsync(apiPrefix + '/topics/:id/messages/:sequencenumber', topicmessage.getMessageByTopicAndSequenceRequest);
+// balances routes
+app.getAsync(apiPrefix + '/balances', balances.getBalances);
 
+// transactions routes
+app.getAsync(apiPrefix + '/transactions', transactions.getTransactions);
+app.getAsync(apiPrefix + '/transactions/:id', transactions.getOneTransaction);
+
+// topics routes
 app.getAsync(apiPrefix + '/topics/:id/messages', topicmessage.getTopicMessages);
-app.getAsync(apiPrefix + '/topic/:id/messages', topicmessage.getTopicMessages);
+app.getAsync(apiPrefix + '/topics/:id/messages/:sequencenumber', topicmessage.getMessageByTopicAndSequenceRequest);
+app.getAsync(apiPrefix + '/topics?/messages?/:consensusTimestamp', topicmessage.getMessageByConsensusTimestamp);
 
 // response data handling middleware
 app.use(responseHandler);

@@ -37,6 +37,8 @@ public class PubSubMessage {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private final EntityId entity;
 
+    private final int transactionType;
+
     @JsonSerialize(using = ProtoJsonSerializer.class)
     private final Transaction transaction;
 
@@ -45,5 +47,5 @@ public class PubSubMessage {
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonSerialize(contentUsing = ProtoJsonSerializer.class)
-    private final Iterable<AccountAmount> nonFeeTransfers; // TODO: try iterable here
+    private final Iterable<AccountAmount> nonFeeTransfers;
 }

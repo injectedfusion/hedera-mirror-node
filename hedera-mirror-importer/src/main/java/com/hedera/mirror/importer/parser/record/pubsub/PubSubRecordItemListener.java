@@ -27,7 +27,6 @@ import com.hederahashgraph.api.proto.java.TransactionRecord;
 import javax.inject.Named;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.support.MessageBuilder;
 
@@ -46,7 +45,7 @@ import com.hedera.mirror.importer.util.Utility;
 @Log4j2
 @Named
 @RequiredArgsConstructor
-@Conditional(PubSubEnabledCondition.class)
+@ConditionalOnPubSubRecordParser
 public class PubSubRecordItemListener implements RecordItemListener {
 
     private final MessageChannel pubsubOutputChannel;
@@ -64,7 +63,10 @@ public class PubSubRecordItemListener implements RecordItemListener {
         EntityId entity = transactionHandler.getEntityId(recordItem);
         PubSubMessage pubSubMessage = buildPubSubMessage(consensusTimestamp, entity, recordItem);
         try {
-            pubsubOutputChannel.send(MessageBuilder.withPayload(pubSubMessage).build());
+            pubsubOutputChannel.send(MessageBuilder
+                    .withPayload(pubSubMessage)
+                    .setHeader("consensusTimestamp", consensusTimestamp)
+                    .build());
         } catch (Exception e) {
             // This will make RecordFileParser to retry whole file, thus sending duplicates of previous transactions
             // in this file. In needed in future, this can be optimized to resend only the txns with consensusTimestamp
@@ -83,7 +85,8 @@ public class PubSubRecordItemListener implements RecordItemListener {
                 .setBody(recordItem.getTransactionBody()) // setting deprecated field makes json conversion easier
                 .build();
         var nonFeeTransfers = addNonFeeTransfers(recordItem.getTransactionBody(), recordItem.getRecord());
-        return new PubSubMessage(consensusTimestamp, entity, transaction, recordItem.getRecord(), nonFeeTransfers);
+        return new PubSubMessage(consensusTimestamp, entity, recordItem.getTransactionType(), transaction,
+                recordItem.getRecord(), nonFeeTransfers);
     }
 
     /**

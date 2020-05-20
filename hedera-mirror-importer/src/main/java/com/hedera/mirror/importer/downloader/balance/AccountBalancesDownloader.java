@@ -20,11 +20,10 @@ package com.hedera.mirror.importer.downloader.balance;
  * ‍
  */
 
+import io.micrometer.core.instrument.MeterRegistry;
 import java.io.File;
+import java.util.Arrays;
 import javax.inject.Named;
-
-import com.hedera.mirror.importer.util.Utility;
-
 import lombok.extern.log4j.Log4j2;
 import org.springframework.scheduling.annotation.Scheduled;
 import software.amazon.awssdk.services.s3.S3AsyncClient;
@@ -34,6 +33,7 @@ import com.hedera.mirror.importer.domain.ApplicationStatusCode;
 import com.hedera.mirror.importer.downloader.Downloader;
 import com.hedera.mirror.importer.leader.Leader;
 import com.hedera.mirror.importer.repository.ApplicationStatusRepository;
+import com.hedera.mirror.importer.util.Utility;
 
 @Log4j2
 @Named
@@ -41,20 +41,21 @@ public class AccountBalancesDownloader extends Downloader {
 
     public AccountBalancesDownloader(
             S3AsyncClient s3Client, ApplicationStatusRepository applicationStatusRepository,
-            NetworkAddressBook networkAddressBook, BalanceDownloaderProperties downloaderProperties) {
-        super(s3Client, applicationStatusRepository, networkAddressBook, downloaderProperties);
+            NetworkAddressBook networkAddressBook, BalanceDownloaderProperties downloaderProperties,
+            MeterRegistry meterRegistry) {
+        super(s3Client, applicationStatusRepository, networkAddressBook, downloaderProperties, meterRegistry);
     }
 
     @Leader
     @Override
-    @Scheduled(fixedRateString = "${hedera.mirror.downloader.balance.frequency:30000}")
+    @Scheduled(fixedRateString = "${hedera.mirror.importer.downloader.balance.frequency:30000}")
     public void download() {
         downloadNextBatch();
     }
 
     @Override
-    protected boolean verifyHashChain(File file) {
-        return true;
+    protected boolean verifyDataFile(String filePath, byte[] verifiedHash) {
+        return Arrays.equals(verifiedHash, Utility.getBalanceFileHash(filePath));
     }
 
     @Override
@@ -65,20 +66,5 @@ public class AccountBalancesDownloader extends Downloader {
     @Override
     protected ApplicationStatusCode getLastValidDownloadedFileHashKey() {
         return null;
-    }
-
-    @Override
-    protected ApplicationStatusCode getBypassHashKey() {
-        return null;
-    }
-
-    @Override
-    protected String getPrevFileHash(String filePath) {
-        return null;
-    }
-
-    @Override
-    protected byte[] getDataFileHash(String fileName) {
-        return Utility.getBalanceFileHash(fileName);
     }
 }

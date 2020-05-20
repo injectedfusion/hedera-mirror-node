@@ -1,3 +1,9 @@
+applicationResource:
+  enabled: false
+  partnerId: ""
+  partnerName: ""
+  projectId: ""
+
 fullnameOverride: mirror
 
 global:
@@ -17,17 +23,22 @@ grpc:
     middleware:
       enabled: true
   priorityClassName: medium
+  serviceMonitor:
+    enabled: true
 
 importer:
   config:
     hedera:
       mirror:
-        db:
-          host: postgresql-pgpool
-          name: mirror_node
-          password: mirror_node_pass
-          username: mirror_node
+        importer:
+          db:
+            host: postgresql-pgpool
+            name: mirror_node
+            password: mirror_node_pass
+            username: mirror_node
   enabled: true
+  podMonitor:
+    enabled: true
   priorityClassName: high
 
 labels: {}
@@ -114,6 +125,8 @@ postgresql:
       requests:
         cpu: 100m
         memory: 128Mi
+  postgresqlImage:
+    debug: true
   postgresql:
     affinity:
       podAntiAffinity:
@@ -137,6 +150,9 @@ postgresql:
       requests:
         cpu: 250m
         memory: 500Mi
+
+priorityClass:
+  enabled: true
 
 prometheus-adapter:
   enabled: true
@@ -210,8 +226,7 @@ prometheus:
         root_url: "%(protocol)s://%(domain)s/grafana/"
     ingress:
       annotations:
-        # TODO: Open ticket with Traefik to not require namespace and/or fix grafana chart to template annotations
-        traefik.ingress.kubernetes.io/router.middlewares: "default-grafana@kubernetescrd"
+        traefik.ingress.kubernetes.io/router.middlewares: '{{ include "hedera-mirror.namespace" . }}-grafana@kubernetescrd'
       enabled: true
       hosts: [""]
       middleware:
@@ -231,8 +246,6 @@ prometheus:
       requests:
         cpu: 75m
         memory: 30Mi
-    service:
-      type: ClusterIP
   kube-state-metrics:
     fullnameOverride: prometheus-kube-state-metrics
     resources:
@@ -253,7 +266,17 @@ prometheus:
         cpu: 20m
         memory: 10Mi
   prometheus:
+    additionalPodMonitors:
+      - name: traefik
+        podMetricsEndpoints:
+          - port: traefik
+            path: /metrics
+            interval: 15s
+        selector:
+          matchLabels:
+            app.kubernetes.io/name: traefik
     prometheusSpec:
+      podMonitorSelectorNilUsesHelmValues: false
       priorityClassName: low
       resources:
         limits:
@@ -284,14 +307,17 @@ rest:
   config:
     hedera:
       mirror:
-        db:
-          apiPassword: mirror_api_pass
-          apiUsername: mirror_api
-          host: postgresql-pgpool
+        rest:
+          db:
+            host: postgresql-pgpool
+            password: mirror_api_pass
+            username: mirror_api
   ingress:
     middleware:
       enabled: true
   priorityClassName: medium
+  serviceMonitor:
+    enabled: true
 
 traefik:
   affinity:
@@ -312,10 +338,7 @@ traefik:
     grpc:
       port: 5600
       expose: true
-    web:
-      port: 80
-    websecure:
-      port: 443
+  priorityClassName: critical
   resources:
     requests:
       cpu: 100m
@@ -323,9 +346,6 @@ traefik:
     limits:
       cpu: 300m
       memory: 150Mi
-  serviceMonitor:
-    enabled: true
-    interval: 30s
   service:
     spec:
       externalTrafficPolicy: Local

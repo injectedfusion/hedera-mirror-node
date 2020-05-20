@@ -11,8 +11,12 @@
     <parent>
         <groupId>com.hedera</groupId>
         <artifactId>hedera-mirror-node</artifactId>
-        <version>0.9.0-rc1</version>
+        <version>0.11.0-rc1</version>
     </parent>
+
+    <properties>
+        <commons-csv.version>1.8</commons-csv.version>
+    </properties>
 
     <dependencies>
         <dependency>
@@ -28,7 +32,7 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-csv</artifactId>
-            <version>1.7</version>
+            <version>${commons-csv.version}</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>

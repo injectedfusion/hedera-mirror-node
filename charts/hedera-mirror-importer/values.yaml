@@ -13,7 +13,8 @@ annotations: {}
 config:
   hedera:
     mirror:
-      dataPath: /var/lib/hedera-mirror-importer
+      importer:
+        dataPath: /var/lib/hedera-mirror-importer
 
 fullnameOverride: ""
 
@@ -23,7 +24,7 @@ global:
 image:
   pullPolicy: IfNotPresent
   repository: gcr.io/mirrornode/hedera-mirror-importer
-  tag: 0.9.0-rc1
+  tag: 0.11.0-rc1
 
 imagePullSecrets: []
 
@@ -54,6 +55,10 @@ persistence:
   storageClass: standard
 
 podManagementPolicy: OrderedReady
+
+podMonitor:
+  enabled: false
+  interval: 30s
 
 podSecurityContext:
   fsGroup: 1000
@@ -90,19 +95,11 @@ securityContext:
   runAsNonRoot: true
   runAsUser: 1000
 
-service:
-  annotations: {}
-  port: 8080
-  type: ClusterIP
-
 serviceAccount:
   create: true
   # The name of the service account to use. If not set and create is true, a name is generated using the fullname template
   name:
 
-serviceMonitor:
-  enabled: true
-  interval: 30s
 
 terminationGracePeriodSeconds: 30
 

@@ -21,6 +21,7 @@
 
 const utils = require('../utils.js');
 const config = require('../config.js');
+const constants = require('../constants.js');
 
 describe('Utils getNullableNumber tests', () => {
   test('Verify getNullableNumber returns correct result for 0', () => {
@@ -191,7 +192,7 @@ describe('Utils isValidLimitNum tests', () => {
     expect(utils.isValidLimitNum('-1')).toBe(false);
   });
   test('Verify invalid above max limit', () => {
-    expect(utils.isValidLimitNum(config.api.maxLimit + 1)).toBe(false);
+    expect(utils.isValidLimitNum(config.maxLimit + 1)).toBe(false);
   });
   test('Verify invalid for 0', () => {
     expect(utils.isValidLimitNum(0)).toBe(false);
@@ -199,8 +200,8 @@ describe('Utils isValidLimitNum tests', () => {
   test('Verify valid for valid number', () => {
     expect(utils.isValidLimitNum(123)).toBe(true);
   });
-  test(`Verify valid for max limit or ${config.api.maxLimit}`, () => {
-    expect(utils.isValidLimitNum(config.api.maxLimit)).toBe(true);
+  test(`Verify valid for max limit or ${config.maxLimit}`, () => {
+    expect(utils.isValidLimitNum(config.maxLimit)).toBe(true);
   });
 });
 
@@ -231,5 +232,38 @@ describe('Utils isValidNum tests', () => {
   });
   test(`Verify valid for Number.MAX_SAFE_INTEGER: ${Number.MAX_SAFE_INTEGER}`, () => {
     expect(utils.isValidNum(Number.MAX_SAFE_INTEGER)).toBe(true);
+  });
+});
+
+describe('utils encodeMessage tests', () => {
+  const inputMessage = Buffer.from([104, 101, 100, 101, 114, 97, 32, 104, 97, 115, 104, 103, 114, 97, 112, 104]);
+  const base64Message = 'aGVkZXJhIGhhc2hncmFwaA==';
+  const utf8Message = 'hedera hashgraph';
+
+  test(`Verify encodeBinary on null character encoding`, () => {
+    expect(utils.encodeBinary(inputMessage, null)).toBe(base64Message);
+  });
+
+  test(`Verify encodeBinary on empty character encoding`, () => {
+    expect(utils.encodeBinary(inputMessage, '')).toBe(base64Message);
+  });
+
+  test(`Verify encodeBinary on hex character encoding`, () => {
+    expect(utils.encodeBinary(inputMessage, 'hex')).toBe(base64Message);
+  });
+
+  // base64 test
+  test(`Verify encodeBinary on base64 character encoding`, () => {
+    expect(utils.encodeBinary(inputMessage, constants.characterEncoding.BASE64)).toBe(base64Message);
+  });
+
+  // utf-8 test
+  test(`Verify encodeBinary on utf-8 character encoding`, () => {
+    expect(utils.encodeBinary(inputMessage, constants.characterEncoding.UTF8)).toBe(utf8Message);
+  });
+
+  // utf8 test
+  test(`Verify encodeBinary on utf8 character encoding`, () => {
+    expect(utils.encodeBinary(inputMessage, 'utf8')).toBe(utf8Message);
   });
 });

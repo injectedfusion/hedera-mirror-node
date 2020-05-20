@@ -190,10 +190,7 @@ const getAccounts = async (req, res) => {
  * @return {} None.
  */
 const getOneAccount = async (req, res) => {
-  logger.debug('Client: [' + req.ip + '] URL: ' + req.originalUrl);
-
   // Parse the filter parameters for account-numbers, balance, and pagination
-
   const acc = utils.parseEntityId(req.params.id);
   if (acc.num === 0) {
     throw InvalidArgumentError.forParams('account.id');
@@ -234,10 +231,7 @@ const getOneAccount = async (req, res) => {
 
   const creditDebit = utils.parseCreditDebitParams(req);
 
-  const accountQuery =
-    'realm_num = ?\n' +
-    '    and entity_num = ? ' +
-    (creditDebit === 'credit' ? ' and ctl.amount > 0 ' : creditDebit === 'debit' ? ' and ctl.amount < 0 ' : '');
+  const accountQuery = 'realm_num = ? and entity_num = ?';
   const accountParams = [acc.realm, acc.num];
 
   let innerQuery = transactions.getTransactionsInnerQuery(

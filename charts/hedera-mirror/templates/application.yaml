@@ -1,0 +1,57 @@
+{{- if .Values.applicationResource.enabled -}}
+apiVersion: app.k8s.io/v1beta1
+kind: Application
+metadata:
+  annotations:
+    kubernetes-engine.cloud.google.com/icon: data:image/png;base64,{{ .Files.Get "logo.png" | b64enc }}
+    marketplace.cloud.google.com/deploy-info: '{ "partner_id": "hederaPartnerId", "partner_name": "partner_name", "product_id": "hederaMirrorSolutionId" }'
+  labels:
+    {{- include "hedera-mirror.labels" . | nindent 4 }}
+    app.kubernetes.io/name: {{ .Release.Name }}
+  name: {{ .Release.Name }}
+  namespace: {{ include "hedera-mirror.namespace" . }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "hedera-mirror.selectorLabels" . | nindent 6 }}
+  addOwnerRef: true
+  componentKinds:
+    - group: v1
+      kind: ConfigMap
+    - group: apps/v1
+      kind: Deployment
+    - group: networking.k8s.io/v1
+      kind: NetworkPolicy
+    - group: v1
+      kind: Pod
+    - group: policy/v1beta1
+      kind: PodDisruptionBudget
+    - group: v1
+      kind: Secret
+    - group: v1
+      kind: Service
+    - group: apps/v1
+      kind: StatefulSet
+  descriptor:
+    description: Hedera Mirror Node mirrors transaction data from Hedera nodes and serves it via GRPC and REST APIs
+    icons:
+      - src: https://s3.amazonaws.com/hedera-com/hedera_hashgraph.png
+        type: image/png
+        size: 547x166
+    keywords:
+      - blockchain
+      - dtl
+      - hedera
+      - hashgraph
+      - mirror
+    links:
+      - description: Source Repository
+        url: https://github.com/hashgraph/hedera-mirror-node
+      - description: Website
+        url: https://hedera.com/
+    maintainers:
+      - name: Hedera Mirror Node team
+        email: mirrornode@hedera.com
+    type: hedera-mirror-node
+    version: {{ .Chart.AppVersion | quote }}
+  {{- end }}

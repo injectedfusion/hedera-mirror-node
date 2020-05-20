@@ -4,7 +4,7 @@ kind: ConfigMap
 metadata:
   labels:
     {{- include "hedera-mirror.labels" . | nindent 4 }}
-  name: traefik
+  name: {{ .Values.traefik.fullnameOverride }}
   namespace: {{ include "hedera-mirror.namespace" . }}
 data:
   traefik.yaml: |-
@@ -16,15 +16,19 @@ data:
       traefik:
         address: ":9000"
       web:
-        address: ":80"
+        address: ":8000"
       websecure:
-        address: ":443"
+        address: ":8443"
         http:
           tls: {}
     metrics:
       prometheus: {}
     ping: {}
     providers:
-      kubernetesCRD: {}
-      kubernetesIngress: {}
+      kubernetesCRD:
+        namespaces:
+          - {{ include "hedera-mirror.namespace" . }}
+      kubernetesIngress:
+        namespaces:
+          - {{ include "hedera-mirror.namespace" . }}
 {{- end -}}

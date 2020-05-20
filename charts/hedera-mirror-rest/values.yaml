@@ -10,7 +10,14 @@ affinity:
 
 annotations: {}
 
-config: {}
+config:
+  hedera:
+    mirror:
+      rest:
+        metrics:
+          config:
+            password: password
+            username: metrics
 
 fullnameOverride: ""
 
@@ -26,7 +33,7 @@ hpa:
 image:
   pullPolicy: IfNotPresent
   repository: gcr.io/mirrornode/hedera-mirror-rest
-  tag: 0.9.0-rc1
+  tag: 0.11.0-rc1
 
 imagePullSecrets: []
 
@@ -107,7 +114,8 @@ serviceAccount:
   name:
 
 serviceMonitor:
-  enabled: true
+  enabled: false
+  interval: 30s
 
 terminationGracePeriodSeconds: 60
 

@@ -23,7 +23,7 @@
       }
     ]
   },
-  "url": "/api/v1/topic/7/messages",
+  "url": "/api/v1/topics/7/messages",
   "responseStatus": 200,
   "responseJson": {
     "messages": [
@@ -32,6 +32,7 @@
         "topic_id": "0.0.7",
         "message": "bWVzc2FnZQ==",
         "running_hash": "cnVubmluZ19oYXNo",
+        "running_hash_version": 2,
         "sequence_number": 1
       },
       {
@@ -39,6 +40,7 @@
         "topic_id": "0.0.7",
         "message": "bWVzc2FnZQ==",
         "running_hash": "cnVubmluZ19oYXNo",
+        "running_hash_version": 2,
         "sequence_number": 2
       },
       {
@@ -46,6 +48,7 @@
         "topic_id": "0.0.7",
         "message": "bWVzc2FnZQ==",
         "running_hash": "cnVubmluZ19oYXNo",
+        "running_hash_version": 2,
         "sequence_number": 3
       }
     ],

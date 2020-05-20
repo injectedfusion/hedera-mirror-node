@@ -22,7 +22,7 @@
 const testutils = require('./testutils.js');
 const config = require('../config.js');
 const math = require('mathjs');
-const maxLimit = config.api.maxLimit;
+const maxLimit = config.maxLimit;
 
 /**
  * This is a mock database for unit testing.
@@ -194,6 +194,7 @@ class Pool {
         Number(accountNum.low) + (accountNum.high == accountNum.low ? 0 : i % (accountNum.high - accountNum.low));
       row.amount = i * 1000;
       row.charged_tx_fee = 100 + i;
+      row.transaction_hash = '';
       rows.push(row);
     }
     if (['asc', 'ASC'].includes(order)) {

@@ -38,7 +38,7 @@
       }
     ]
   },
-  "url": "/api/v1/topic/7/messages?sequencenumber=gt:3&timestamp=lte:1234567890.000000005",
+  "url": "/api/v1/topics/7/messages?sequencenumber=gt:3&timestamp=lte:1234567890.000000005&encoding=base64",
   "responseStatus": 200,
   "responseJson": {
     "messages": [
@@ -47,6 +47,7 @@
         "topic_id": "0.0.7",
         "message": "bWVzc2FnZQ==",
         "running_hash": "cnVubmluZ19oYXNo",
+        "running_hash_version": 2,
         "sequence_number": 4
       },
       {
@@ -54,6 +55,7 @@
         "topic_id": "0.0.7",
         "message": "bWVzc2FnZQ==",
         "running_hash": "cnVubmluZ19oYXNo",
+        "running_hash_version": 2,
         "sequence_number": 5
       }
     ],

@@ -33,15 +33,18 @@ import com.hedera.mirror.importer.util.Utility;
 
 @Data
 @Validated
-@ConfigurationProperties("hedera.mirror")
+@ConfigurationProperties("hedera.mirror.importer")
 public class MirrorProperties {
 
     private static final String ADDRESS_BOOK_FILE = "addressbook.bin";
 
-    private Path addressBookPath;
-
     @NotNull
     private Path dataPath = Paths.get(".", "data");
+
+    private Path initialAddressBook;
+
+    @NotNull
+    private String verifyHashAfter = "";
 
     @NotNull
     private HederaNetwork network = HederaNetwork.DEMO;
@@ -49,8 +52,10 @@ public class MirrorProperties {
     @Min(0)
     private long shard = 0L;
 
+    private Long topicRunningHashV2AddedTimestamp;
+
     public Path getAddressBookPath() {
-        return addressBookPath != null ? addressBookPath : dataPath.resolve(ADDRESS_BOOK_FILE);
+        return dataPath.resolve(ADDRESS_BOOK_FILE);
     }
 
     public void setDataPath(Path dataPath) {

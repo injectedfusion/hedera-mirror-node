@@ -20,19 +20,18 @@ package com.hedera.mirror.importer.repository;
  * ‍
  */
 
+import java.util.ArrayList;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.test.context.jdbc.Sql;
 
 import com.hedera.mirror.importer.domain.RecordFile;
 
-@Sql(executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD, scripts = "classpath:db/scripts/cleanup.sql")
-// Class manually commits so have to manually cleanup tables
 public class RecordFileRepositoryTest extends AbstractRepositoryTest {
 
     @Test
     void insert() {
-        RecordFile recordFile = new RecordFile(null, "fileName", 20L, 30L, "fileHash", "previousHash");
+        RecordFile recordFile = new RecordFile(0L, 0L, null, "fileName", 20L, 30L, "fileHash", "previousHash",
+                new ArrayList<>(), 0);
         recordFile = recordFileRepository.save(recordFile);
         Assertions.assertThat(recordFileRepository.findById(recordFile.getId()).get())
                 .isNotNull()

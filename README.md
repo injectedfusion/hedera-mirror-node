@@ -1,6 +1,7 @@
 [![CircleCI](https://circleci.com/gh/hashgraph/hedera-mirror-node/tree/master.svg?style=shield)](https://circleci.com/gh/hashgraph/hedera-mirror-node/tree/master)
 [![codecov](https://img.shields.io/codecov/c/github/hashgraph/hedera-mirror-node/master)](https://codecov.io/gh/hashgraph/hedera-mirror-node)
 [![GitHub](https://img.shields.io/github/license/hashgraph/hedera-mirror-node)](LICENSE)
+[![Discord](https://img.shields.io/badge/discord-join%20chat-blue.svg)](https://hedera.com/discord)
 
 # Hedera Mirror Node
 
@@ -65,6 +66,15 @@ docker-compose up
 -   [Operations](docs/operations.md)
 -   [Testing](docs/testing.md)
 -   [Troubleshooting](docs/troubleshooting.md)
+
+## Releasing
+
+To prepare for a new release:
+
+```
+./mvnw clean package -N -P=release -Drelease.version=x.y.z -Drelease.chartVersion=x.y.z
+helm dependency update charts/hedera-mirror
+```
 
 ## Contributing
 
