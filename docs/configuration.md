@@ -34,6 +34,7 @@ value, it is recommended to only populate overridden properties in the custom `a
 | `hedera.mirror.importer.downloader.balance.batchSize`                | 15                      | The number of signature files to download per node before downloading the signed files         |
 | `hedera.mirror.importer.downloader.balance.enabled`                  | true                    | Whether to enable balance file downloads                                                       |
 | `hedera.mirror.importer.downloader.balance.frequency`                | 30s                     | The fixed period between invocations. Can accept duration units like `10s`, `2m` etc.          |
+| `hedera.mirror.importer.downloader.balance.keepSignatures`           | false                   | Whether to keep balance signature files after successful verification. If false, files are deleted. |
 | `hedera.mirror.importer.downloader.balance.prefix`                   | accountBalances/balance | The prefix to search cloud storage for balance files                                           |
 | `hedera.mirror.importer.downloader.balance.threads`                  | 13                      | The number of threads to search for new files to download                                      |
 | `hedera.mirror.importer.downloader.bucketName`                       | "hedera-demo-streams"   | The cloud storage bucket name to download streamed files                                       |
@@ -42,6 +43,7 @@ value, it is recommended to only populate overridden properties in the custom `a
 | `hedera.mirror.importer.downloader.record.batchSize`                 | 40                      | The number of signature files to download per node before downloading the signed files         |
 | `hedera.mirror.importer.downloader.record.enabled`                   | true                    | Whether to enable record file downloads                                                        |
 | `hedera.mirror.importer.downloader.record.frequency`                 | 500ms                   | The fixed period between invocations. Can accept duration units like `10s`, `2m` etc.          |
+| `hedera.mirror.importer.downloader.record.keepSignatures`            | false                   | Whether to keep record signature files after successful verification. If false, files are deleted. |
 | `hedera.mirror.importer.downloader.record.prefix`                    | recordstreams/record    | The prefix to search cloud storage for record files                                            |
 | `hedera.mirror.importer.downloader.record.threads`                   | 13                      | The number of threads to search for new files to download                                      |
 | `hedera.mirror.importer.downloader.region`                           | us-east-1               | The region associated with the bucket                                                          |
@@ -69,8 +71,9 @@ value, it is recommended to only populate overridden properties in the custom `a
 | `hedera.mirror.importer.parser.record.entity.persist.nonFeeTransfers`       | false                   | Persist non-fee transfers for transactions that explicitly request hbar transfers              |
 | `hedera.mirror.importer.parser.record.entity.persist.systemFiles`           | true                    | Persist only system files (number lower than `1000`) to the database                           |
 | `hedera.mirror.importer.parser.record.entity.persist.transactionBytes`      | false                   | Persist raw transaction bytes to the database                                                  |
-| `hedera.mirror.importer.parser.record.entity.sql.batchSize`                 | 100                     | When inserting transactions into db, executeBatches() is called every these many transactions  |
+| `hedera.mirror.importer.parser.record.entity.sql.batchSize`                 | 2000                    | When inserting transactions into db, executeBatches() is called every these many transactions  |
 | `hedera.mirror.importer.parser.record.pubsub.topicName`                     |                         | Pubsub topic to publish transactions to                                                        |
+| `hedera.mirror.importer.parser.record.pubsub.maxSendAttempts`               | 5                       | Number of attempts when sending messages to PubSub (only for retryable errors)                 |
 | `hedera.mirror.importer.topicRunningHashV2AddedTimestamp`            | Network-based  | Unix timestamp (in nanos) of first topic message with v2 as running hash version. Use this config to override the default network based value |
 | `hedera.mirror.importer.shard`                                       | 0                       | The default shard number that the component participates in                                    |
 
